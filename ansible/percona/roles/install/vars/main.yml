@@ -1,0 +1,9 @@
+percona_config:
+  bind : 127.0.0.1
+  db_port: 3306
+  default_var_path: /var/run/mysqld
+  datadir: /var/lib/mysql
+  logdir: /var/log/mysql
+  tmpdir: /tmp
+  rootpwd: '{{ ansible_date_time.iso8601_micro | to_uuid }}'
+  password: '{{ lookup("password", "credentials chars=ascii_letters") | trim }}'

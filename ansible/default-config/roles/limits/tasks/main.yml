@@ -1,0 +1,15 @@
+# cat /etc/security/limits.conf
+# Manage limit file
+- name: Add or modify hard nofile limits for root
+  pam_limits:
+    domain: 'root'
+    limit_type: '-'
+    limit_item: nofile
+    value: "{{ limit_config.linmitvalue }}"
+
+- name: Add or modify hard nofile limits for wildcard domain
+  pam_limits:
+    domain: '*'
+    limit_type: '-'
+    limit_item: nofile
+    value: "{{ limit_config.linmitvalue }}"

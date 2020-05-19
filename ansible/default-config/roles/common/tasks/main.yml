@@ -1,0 +1,88 @@
+# Essential soft
+- name: Updating host using apt
+  apt:
+    update_cache: yes
+    upgrade: dist
+
+- name: Install default stuff
+  apt:
+    name: "{{ item }}"
+    state: latest
+    dpkg_options: 'force-confold,force-confdef'
+    force: yes
+    force_apt_get: yes
+  loop:
+    - tar
+    - apt-transport-https
+    - ca-certificates
+    - software-properties-common
+    - build-essential
+    - sudo
+    - curl
+    - wget
+    - htop
+    - nmap
+    - unzip
+    - gnupg2
+    - jq
+    #- iptables
+    #- ufw
+
+- name: Install python-dev & python-pip for Ansible
+  apt:
+    name: "{{ item }}"
+    state: latest
+    dpkg_options: 'force-confold,force-confdef'
+    force: yes
+    force_apt_get: yes
+  become: true
+  loop:
+    - python-dev
+    - python-pip
+
+- name: Get installed pip version
+  command: "pip --version"
+  register: pip_version_output
+  ignore_errors: yes
+  changed_when: false
+
+- name: Installing Ansible for Ansible exist on dist server
+  pip:
+    name: ansible
+    state: latest
+
+- name: Remove useless stuff
+  apt:
+    name: "{{ item }}"
+    state: absent
+    force: yes
+    force_apt_get: yes
+  loop:
+    # For Docker
+    - docker
+    - docker-engine
+    - docker.io
+    - runc
+    - exim4-*
+    # For Percona
+    - apparmor
+
+- name: Set to generate locales
+  debconf:
+    name: locales
+    question: locales/locales_to_be_generated
+    value: en_US.UTF-8 UTF-8, fr_FR.UTF-8 UTF-8
+    vtype: multiselect
+
+- name: Clean
+  apt:
+    force: yes
+    force_apt_get: yes
+    autoclean: yes
+    autoremove: yes
+
+- name: "Ansible | Print multiple variable"
+  debug:
+    msg: |
+      The operating system is {{ ansible_distribution }}
+      Total RAM is {{ ansible_memory_mb.real.total }}

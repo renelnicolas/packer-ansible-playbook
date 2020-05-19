@@ -1,0 +1,87 @@
+- name: Download Percona
+  get_url:
+    url: https://repo.percona.com/apt/percona-release_latest.{{ansible_distribution_release|lower}}_all.deb
+    dest: /tmp/percona-release_latest.{{ansible_distribution_release|lower}}_all.deb
+
+- name: Install percona.deb using dpkg
+  apt:
+    deb: '{{ item }}'
+    state: present
+  with_items:
+    - /tmp/percona-release_latest.{{ansible_distribution_release|lower}}_all.deb
+
+- name: Force to use percona 8
+  command: percona-release setup ps80
+
+- name: Install Percona tools
+  apt:
+    name: "{{ item }}"
+    state: latest
+    dpkg_options: 'force-confold,force-confdef'
+    force: yes
+    force_apt_get: yes
+  loop:
+    - percona-server-server
+    - percona-server-client
+    - percona-toolkit
+
+- name: Custom mysql.cnf file
+  template:
+    src: templates/mysql.cnf.j2
+    dest: /etc/mysql/conf.d/mysql.cnf
+    mode: '0640'
+  notify:
+    - start mysql
+
+- name: Installing PyMySQL
+  pip:
+    name: PyMySQL
+    state: latest
+
+- name: Check if var exist and not empty
+  fail:
+    msg: Database credentials cannot be empty
+  when: (lookup('password', 'credentials chars=ascii_letters') | trim ) == ""
+
+- name: MySQL | Set the root password.
+  mysql_user:
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    name: root
+    host: localhost
+    password: '{{ percona_config.rootpwd }}'
+  become: true
+
+- name: Create main database user with all database privileges
+  when: (lookup('password', 'credentials chars=ascii_letters') | trim ) == ""
+  mysql_user:
+    name: omt_admin
+    password: '
+    {{percona_config.password}}'
+    check_implicit_admin: yes
+    login_user: root
+    login_password: '{{percona_config.rootpwd}}'
+    encrypted: no
+    priv: '*.*:ALL'
+    state: present
+
+- name: Cleaning up build files
+  command: rm -rf /tmp/{{ item }}
+  with_items:
+    - percona-release_latest.{{ansible_distribution_release|lower}}_all.deb
+  notify:
+    - restart mysql
+
+- name: Clean
+  apt:
+    force: yes
+    force_apt_get: yes
+    autoclean: yes
+    autoremove: yes
+
+### TEST="mytest" ansible-playbook main.yml -i hosts
+## >>> TEST={{ lookup('env','TEST') }} is an environment variable
+## >>> Credentials : {{ lookup('password', 'credentials chars=ascii_letters') }}
+- name: "Ansible | Print multiple variable"
+  debug:
+    msg: |
+      >>> The operating system is {{ ansible_distribution }} with Total RAM {{ (ansible_memory_mb.real.total / 1000) | round | int }}G

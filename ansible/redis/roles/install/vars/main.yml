@@ -1,0 +1,12 @@
+redis_config:
+  version: 6.0.3
+  bind : 127.0.0.1 ::1
+  redis_port: 6379
+  sentinel_port: 26379
+  timeout: 0
+  tcpkeepalive: 300
+  databases : 16
+  pidfile: "/var/run/redis_6379.pid"
+  logfile: "/var/log/redis_6379.log"
+  loglevel: "notice"
+  dbDir: "/var/db/redis/"

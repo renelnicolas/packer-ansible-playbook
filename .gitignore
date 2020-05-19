@@ -1,0 +1,6 @@
+.DS_Store
+
+# app file
+hosts
+credentials
+variables.json

@@ -1,0 +1,10 @@
+---
+# Manage default vm tweaks
+- name: Default server configuration & tweaks
+  hosts: all
+  become: yes
+  become_method: sudo
+  roles:
+    - common
+    - etc
+    - limits

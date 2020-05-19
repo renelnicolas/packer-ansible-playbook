@@ -1,0 +1,8 @@
+---
+## ansible-playbook main.yml -i hosts
+- name: Simple Percona Server Deploy
+  hosts: all
+  become: yes
+  become_method: sudo
+  roles:
+    - install

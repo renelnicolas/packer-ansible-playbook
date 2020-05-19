@@ -1,0 +1,123 @@
+# Essential soft
+- name: Updating host using apt
+  apt:
+    update_cache: yes
+    upgrade: dist
+
+- name: Install tcl & libjemalloc1 for Redis
+  apt:
+    name: "{{ item }}"
+    state: latest
+    dpkg_options: 'force-confold,force-confdef'
+    force: yes
+    force_apt_get: yes
+  loop:
+    - make
+    - tcl
+    - libjemalloc1
+    - pkg-config
+
+- name: Download stable redis version
+  get_url:
+    url: http://download.redis.io/releases/redis-{{redis_config.version}}.tar.gz
+    dest: /tmp/redis-{{redis_config.version}}.tar.gz
+
+- name: Uncompress redis
+  command: tar xzvf /tmp/redis-{{redis_config.version}}.tar.gz -C /tmp
+
+- name: Build redis
+  command: make -C /tmp/redis-{{redis_config.version}}
+
+- name: Build the default target
+  make:
+    chdir: /tmp/redis-{{redis_config.version}}
+
+- name: Run 'install' target as root
+  make:
+    chdir: /tmp/redis-{{redis_config.version}}
+    target: install
+  become: yes
+
+- name: Create redis group
+  group:
+    name: redis
+    state: present
+    system: yes
+
+- name: Create redis user
+  user:
+    name: redis
+    group: redis
+    createhome: no
+    shell: /bin/false
+    system: yes
+    state: present
+
+- name: Check if /etc/redis exists
+  file:
+    path: /etc/redis
+    state: directory
+    mode: '0755'
+
+- name: Check if {{redis_config.dbDir}} exists
+  file:
+    path: '{{ redis_config.dbDir }}'
+    state: directory
+    group: redis
+    owner: redis
+    mode: '0755'
+
+- name: Default redis.conf file
+  copy:
+    src: templates/redis.conf
+    dest: /etc/redis/redis.conf
+    group: redis
+    owner: redis
+
+- name: Copy redis_init_script
+  copy:
+    src: /tmp/redis-{{redis_config.version}}/utils/redis_init_script
+    dest: /etc/init.d/redis_6379
+    group: redis
+    owner: redis
+    mode: '0755'
+    remote_src: yes
+
+- shell: update-rc.d redis_6379 "{{ item }}"
+  with_items:
+    - "defaults"
+    - "enable"
+
+- name: Custom redis.conf file
+  template:
+    src: templates/redis.conf.j2
+    dest: /etc/redis/{{ redis_config.redis_port }}.conf
+    group: redis
+    owner: redis
+
+- name: Copy local redis-launch script
+  template:
+    src: templates/redis-launch.j2
+    dest: /usr/local/bin/redis-launch
+    mode: 0755
+
+- name: cleaning up build files
+  command: rm -rf /tmp/{{ item }}
+  with_items:
+    - redis-{{redis_config.version}}
+    - redis-{{redis_config.version}}.tar.gz
+  notify:
+    - restart redis
+
+- name: Clean
+  apt:
+    force: yes
+    force_apt_get: yes
+    autoclean: yes
+    autoremove: yes
+
+- name: "Ansible | Print multiple variable"
+  debug:
+    msg: |
+      The operating system is {{ ansible_distribution }}
+      Total RAM is {{ ansible_memory_mb.real.total }}

@@ -1,0 +1,15 @@
+[dev]
+XX.XX.XX.XX
+
+[prod]
+XX.XX.XX.XX
+
+[dev:vars]
+ansible_connection=ssh
+ansible_ssh_user=root
+ansible_ssh_private_key_file=~/.ssh/id_rsa
+
+[prod:vars]
+ansible_connection=ssh
+ansible_ssh_user=root
+ansible_ssh_private_key_file=~/.ssh/id_rsa

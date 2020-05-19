@@ -1,0 +1,11 @@
+# Tweak sysctl : cat /etc/sysctl.conf
+- name: Change various sysctl-settings, look at the sysctl-vars file for documentation
+  sysctl:
+    name: '{{ item.key }}'
+    value: '{{ item.value }}'
+    # sysctl_file: /etc/sysctl.conf
+    # sysctl_set: yes
+    state: present
+    reload: no
+    # ignoreerrors: no
+  with_dict: '{{ sysctl_config }}'

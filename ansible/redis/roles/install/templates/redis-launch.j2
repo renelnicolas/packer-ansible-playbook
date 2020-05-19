@@ -1,0 +1,5 @@
+{% if redis_config.redis_password is defined %}
+    redis-cli -p {{ redis_config.redis_port }} -a {{ redis_config.redis_password }}
+{% else %}
+    redis-cli -p {{ redis_config.redis_port }}
+{% endif %}

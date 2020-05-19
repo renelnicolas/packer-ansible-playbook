@@ -1,0 +1,121 @@
+sysctl_config:
+  ####
+  # Core Parameters
+  ####
+
+  # Default Socket Receive Buffer
+  net.core.rmem_default: 4194304
+  # Maximum Socket Receive Buffer
+  net.core.rmem_max: 4194304
+  # Default Socket Send Buffer
+  net.core.wmem_default: 4194304
+  # Maximum Socket Send Buffer
+  net.core.wmem_max: 4194304
+
+  # Increase number of incoming connections
+  net.core.somaxconn: 65535
+
+  # Increase number of incoming connections backlog
+  net.core.netdev_max_backlog: 250000
+  net.ipv4.tcp_max_orphans: 250000
+
+  # Increase the maximum amount of option memory buffers
+  net.core.optmem_max: 25165824
+
+  # Do less swapping
+  vm.swappiness: 1
+  vm.dirty_ratio: 70
+  vm.dirty_background_ratio: 10
+  vm.dirty_expire_centisecs: 12000
+
+  # Tweak - fs.file-max"
+  fs.file-max: 3261868
+  fs.nr_open: 3261868
+
+  ####
+  # Hugepages
+  ####
+
+  vm.nr_hugepages: 0
+  vm.nr_hugepages_mempolicy: 0
+  vm.hugepages_treat_as_movable: 0
+  vm.nr_overcommit_hugepages: 0
+
+  ####
+  # ipv4 TCP Parameters
+  ####
+
+  net.ipv4.tcp_timestamps: 0
+  net.ipv4.tcp_sack: 1
+  net.ipv4.tcp_window_scaling: 1
+
+  # Have a larger connection range available
+  net.ipv4.ip_local_port_range: 1024 65000
+  ####net.ipv4.netfilter.ip_conntrack_tcp_timeout_time_wait: 2
+
+  # This setting determines the time that must elapse before
+  # TCP/IP can release a closed connection
+  net.ipv4.tcp_fin_timeout: 15
+
+  # This determines the number of probes before timing out
+  # Decrease the time default value for connections to keep alive
+  net.ipv4.tcp_keepalive_time: 300
+  net.ipv4.tcp_keepalive_probes: 5
+  # This determines the wait time between isAlive interval probes
+  net.ipv4.tcp_keepalive_intvl: 15
+
+  # It enables fast recycling of TIME_WAIT sockets
+  # Enables fast recycling of TIME_WAIT sockets.
+  # (Use with caution according to the kernel documentation!)
+  net.ipv4.tcp_tw_recycle: 1
+
+  # This allows reusing sockets in TIME_WAIT state for new connections
+  # when it is safe from protocol viewpoint
+  net.ipv4.tcp_tw_reuse: 1
+
+  # log packets with impossible addresses simply enable
+  net.ipv4.conf.all.log_martians: 1
+  net.ipv4.conf.default.log_martians: 1
+
+  # SYN Flood Protection
+  # See http://lwn.net/Articles/277146/
+  net.ipv4.tcp_max_syn_backlog: 8096
+  net.ipv4.tcp_slow_start_after_idle: 0
+  net.ipv4.tcp_syn_retries: 6
+  net.ipv4.tcp_synack_retries: 3
+  net.ipv4.tcp_syncookies: 1
+  net.ipv4.tcp_no_metrics_save: 1
+
+  net.ipv4.conf.all.rp_filter: 1
+  net.ipv4.conf.default.rp_filter: 1
+
+  net.ipv4.tcp_wmem: 4096 87380 4194304
+  net.ipv4.tcp_rmem: 4096 65536 4194304
+
+  ####
+  # IPv6 TCP Parameters
+  ####
+
+  # Disable IPv6
+  net.ipv6.conf.all.disable_ipv6: 1
+
+  # Disable acceptance of IPv6 router solicitations messages
+  net.ipv6.conf.default.router_solicitations: 0
+
+  # Disable Accept Router Preference from router advertisement
+  net.ipv6.conf.default.accept_ra_rtr_pref: 0
+
+  # Disable learning Prefix Information from router advertisement
+  net.ipv6.conf.default.accept_ra_pinfo: 0
+
+  # Disable learning Hop limit from router advertisement
+  net.ipv6.conf.default.accept_ra_defrtr: 0
+
+  # Disable IPv6 autoconfiguration
+  net.ipv6.conf.default.autoconf: 0
+
+  # Disable neighbor solicitations to send out per address
+  net.ipv6.conf.default.dad_transmits: 0
+
+  # Assign one global unicast IPv6 addresses to each interface
+  net.ipv6.conf.default.max_addresses: 1

@@ -1,0 +1,30 @@
+{
+	"variables": {
+		"scw_organization_id": "",
+		"scw_api_token": "",
+		"scw_image_id": ""
+	},
+
+	"sensitive-variables": ["scw_organization_id", "scw_api_token", "scw_image_id"],
+
+	"builders": [{
+		"type": "scaleway",
+		"organization_id": "{{user `scw_organization_id`}}",
+		"api_token": "{{user `scw_api_token`}}",
+		"region": "par1",
+		"image": "{{user `scw_image_id`}}",
+		"image_name": "packer-base-{{isotime \"20060102-030405\"}}-{{timestamp}}",
+		"commercial_type": "DEV1-S",
+		"ssh_username": "root"
+	}],
+
+	"provisioners": [{
+			"type": "shell",
+			"script": "scripts/disable_transparent_hugepage.sh"
+		},
+		{
+			"type": "ansible",
+			"playbook_file": "../../ansible/default-config/main.yml"
+		}
+	]
+}

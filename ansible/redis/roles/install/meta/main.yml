@@ -1,0 +1,9 @@
+---
+galaxy_info:
+  author: "Nicolas Renel"
+  platforms: Debian 9
+  categories:
+    - Redis
+    - BDD
+
+dependencies: []

@@ -1,0 +1,27 @@
+---
+- name: Manage User
+  hosts: all
+
+  vars_files:
+    - vars.yml
+
+  tasks:
+  - name: Create user
+    user:
+      name: "{{ item.name }}"
+      comment:  "{{ item.comment }}"
+      append:  {{ item.append }}
+      state: present
+      createhome:  {{ item.createhome }}
+    with_items: {{users}}
+
+  - name: Add public ssh key to user
+    authorized_key:
+      name: "{{ item.name }}"
+      state: present
+      key: " {{ item.key }}"
+    with_items: {{users}}
+
+  # Find away to expire password when new user
+  - name: Expire password
+    command: chage -d 0 username

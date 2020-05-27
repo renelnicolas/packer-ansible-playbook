@@ -1,0 +1,17 @@
+users:
+  - {
+      name: nrenel,
+      comment: "Hello",
+      append: yes,
+      createhome: yes,
+      key: "{{ lookup('file', 'ssh/nrenel.pub') }}"
+      #key: https://github.com/nrenel.pub
+    }
+  - {
+      name: nicolas,
+      comment: "Nicolas is a smart guy",
+      append: yes,
+      createhome: yes,
+      key: "{{ lookup('file', 'ssh/nicolas.pub') }}"
+      #key: https://github.com/nrenel.pub
+    }

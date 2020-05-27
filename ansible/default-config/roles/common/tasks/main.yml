@@ -27,6 +27,23 @@
     - jq
     - iptables
 
+- name: Install NetData stuff
+  apt:
+    name: "{{ item }}"
+    state: latest
+    dpkg_options: "force-confold,force-confdef"
+    force: yes
+    force_apt_get: yes
+  loop:
+    - zlib1g-dev
+    - libuv1-dev
+    - uuid-de
+    - autoconf
+    - autogen
+    - automake
+    - cmake
+    - pkg-config
+
 - name: Install python-dev & python-pip for Ansible
   apt:
     name: "{{ item }}"
